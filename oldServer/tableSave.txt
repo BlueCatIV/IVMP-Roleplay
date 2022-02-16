@@ -1,0 +1,44 @@
+return {
+    ["TestPlayer"] = {
+        ["JobId"] = "0",
+        ["Password"] = "123",
+        ["ownCar"] = -1,
+        ["hasJob"] = false,
+        ["Money"] = 25,
+    },
+    ["Po"] = {
+        ["JobId"] = "0",
+        ["Password"] = "abc",
+        ["ownCar"] = -1,
+        ["hasJob"] = false,
+        ["Money"] = 0,
+    },
+    ["Norbert"] = {
+        ["JobId"] = "0",
+        ["ownHouse"] = "HEA1",
+        ["Job"] = "0",
+        ["Password"] = "LOL",
+        ["Garage"] = {
+            [4] = "Infernus",
+            [1] = "Cognoscenti",
+            [2] = "Admiral",
+            [3] = "Banshee",
+        },
+        ["hasJob"] = false,
+        ["Money"] = 5260500,
+    },
+    ["Ben"] = {
+        ["JobId"] = "0",
+        ["Password"] = "lola",
+        ["ownCar"] = -1,
+        ["hasJob"] = false,
+        ["Money"] = 0,
+    },
+    ["Bruce"] = {
+        ["JobId"] = "0",
+        ["Password"] = "admin",
+        ["ownCar"] = -1,
+        ["hasJob"] = false,
+        ["Money"] = 25,
+    },
+}
