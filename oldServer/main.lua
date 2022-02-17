@@ -15,8 +15,10 @@ loadScript("entities")
 
 setWorldMinuteDuration(1, 0)
 
+-- Loading salt, a thing that allows me to save and load tables to save player data as seen below
 salt = assert(require("salt"))
 
+-- Basic table for player stats (for reference for salt and as a base)
 PlayerTable = {
 ["Bruce"] = {
 Money = 25,
@@ -38,8 +40,10 @@ Password = "123",
 },
 }
 
+-- Table for all vehicles currently spawned
 AllVehicles = {}
 
+-- Function to add fuel system to car as soon as its spawned
 function addToFuel(playerid, spawned, entityType, entityId)
 	if(spawned == true and entityType == 1) then
 		AllVehicles[entityId] = 100
@@ -48,6 +52,7 @@ end
 
 registerEvent("addToFuel", "onPlayerSpawnEntity")
 
+-- Fuel system, does stuff I dont remember
 function fuel(playerid)
 	if(isPlayerOnline(playerid) == true) then
 		if(AllVehicles[getPlayerDriving(playerid)] <= 0) then
@@ -65,6 +70,7 @@ function fuel(playerid)
 	end
 end
 
+-- Function to see if something is already in a table / check for duplicates I guess
 function containsTable(list, x)
 	for _, v in pairs(list) do
 		if v == x then return true end
@@ -72,10 +78,12 @@ function containsTable(list, x)
 	return false
 end
 
+-- Function to save a table with salt, used for player stats
 function saveTable()
 	salt.save(PlayerTable, "tableSave.txt")
 end
 
+-- Function to load a table with salt, used for player stats
 function loadTable()
 	PlayerTable, err = salt.load("tableSave.txt")
 	if err then
@@ -85,6 +93,7 @@ function loadTable()
 	end
 end
 
+-- Function to split strings, used to retrieve login data etc. from chat input
 function mysplit(inputstr, sep)
 	if sep == nil then
 		sep = "%s"
@@ -96,6 +105,7 @@ function mysplit(inputstr, sep)
 	return t
 end
 
+-- Function to check whether something contains something, used to check for commands in chat
 function contains(str, prefix)
 	i, j = string.find(str, prefix)
 	if(i ~= nil and j ~= nil) then
@@ -109,6 +119,7 @@ function contains(str, prefix)
 	end
 end
 
+-- Function to register a user, creates account and table entry
 function register(text, playerid)
 	stringhere = mysplit(text)
 	user = getPlayerName(playerid)
@@ -118,20 +129,24 @@ function register(text, playerid)
 	sendPlayerMsg(playerid, "You successfully registered! Please do /login [Password] now.", 0xFFFF0000)
 end
 
+-- Variable for hunger (test only)
 hunger = 100
 
+-- Function to start fuel system as soon as player enters vehicle
 function startFuel(playerid)
 	fuelTimer = setTimer("fuel", 1000, 0, playerid)
 end
 
 registerEvent("startFuel", "onPlayerEnteredVehicle")
 
+-- Function to end fuel system / stop using fuel
 function endFuel()
 	deleteTimer(fuelTimer)
 end
 
 registerEvent("endFuel", "onPlayerExitVehicle")
 
+-- Function to set keybinds when player joins
 function onPlayerJoin(playerid)
 	setPlayerKeyHook(playerid, 0x50, true)
 	setPlayerKeyHook(playerid, 0x51, true)
@@ -139,6 +154,7 @@ end
 
 registerEvent("onPlayerJoin", "onPlayerCredential")
 
+-- Function to check what key the player presses and what to do, e.g. open profile window, car window...
 function onPlayerBindKey(playerid, Bind, IsBindUp)
 	if(IsBindUp) then
 		if(Bind == 0x50) then -- P key
@@ -175,6 +191,7 @@ end
 
 registerEvent("onPlayerBindKey", "onPlayerKeyPress")
 
+-- Function to login a player, checks password, loads stats from table into the player
 function login(text, playerid)
 	test = mysplit(text)
 	if(not PlayerTable[getPlayerName(playerid)]) then
@@ -193,9 +210,11 @@ function login(text, playerid)
 	end
 end
 
+-- Calling load and save functions of salt table
 loadTable()
 saveTable()
 
+-- Function to create new player in player table to keep stats etc.
 function createPlayerEntry(Name)
 	if PlayerTable[Name] then
 		return end
@@ -211,8 +230,10 @@ function createPlayerEntry(Name)
 	saveTable()
 return end
 
+-- Variable to see whether or not player is already logged in
 loggedIn = false
 
+-- Function that handles commands in chat and what to do
 function Command(playerid, text)
 	if(text == "/hi") then
 		sendPlayerMsg(playerid, "Hello!", 0xFFFF0000)
@@ -266,6 +287,7 @@ end
 
 registerEvent("Command", "onPlayerCommand")
 
+-- Function to get the position of a player
 function getPos()
 	local x, y, z = getPlayerPos(1)
 	print(x)
@@ -274,11 +296,13 @@ function getPos()
 	sendPlayerMsg(1, "Koordinaten werden angezeigt", 0xFFFF0000)
 end
 
+-- Wait/Sleep function for certain stuff
 function wait(seconds)
 	local start = os.time()
 	repeat until os.time() > start + seconds
 end
 
+-- Function to hide a checkpoint, so that players that are not in a job do not see the checkpoints the job creates (dunno if it works)
 function hideCheck(playerid, CheckpointId)
 	players = getPlayers()
 	table.remove(players, playerid)
@@ -287,6 +311,7 @@ function hideCheck(playerid, CheckpointId)
 	end
 end
 
+-- Function to see whether player enters a checkpoint, which one and what to do then
 function onPlayerEnterCheckPoint(playerid, checkpointId)
 	if(checkpointId == busDepotCP) then
 		showDialogList(playerid, 1337)
@@ -353,25 +378,30 @@ end
 
 registerEvent("onPlayerEnterCheckPoint", "onPlayerEnterCheckPoint")
 
+-- Function to delete a checkpoint
 function deleteCheck()
 	deleteCheckPoint(CheckpointId)
 end
 
+-- Function to delete a blip
 function deleteBlips()
 	deleteBlip(BlipId)
 end
 
+-- Function to generate a random number
 function mathRand(a, b)
 	math.randomseed(os.time())
 	c = math.random(a, b)
 	return c
 end
 
+-- Function to round numbers
 function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
 
+-- Function to spawn the bus depot with its checkpoint and blip
 function busDepot()
 	busDepotCP = createCheckPoint(1009.325378418, 290.64385986328, 30.512239456177, 2.0, 0xFFFF00FF, 1, 0, 1)
 	createBlip(1009.325378418, 290.64385986328, 30.512239456177, 30, 0xFFFFFFFF, 1, 0, true, "Bus Depot")
@@ -379,6 +409,7 @@ end
 
 busDepot()
 
+-- Function to create the dialog for the bus job
 function busDialog()
 	createDialogList(1337,  "Bus Routes", 2, "Choose", "Cancel")
 	setDialogListHeaders(1337, "Route~Payment")
@@ -389,6 +420,7 @@ end
 
 busDialog()
 
+-- Function to create the dialog for the cluckin bell job
 function CBDialog()
 	createDialogList(45, "Fast Food Store", 1, "Yes", "No")
 	setDialogListHeaders(45, "Cluckin' Bell")
@@ -397,6 +429,7 @@ end
 
 CBDialog()
 
+-- Function to create the menu for cluckin bell job when youre working
 function FFMenuDialog()
 	createDialogList(55, "Fast Food Menu", 1, "Make", "Cancel")
 	setDialogListHeaders(55, "Item")
@@ -409,6 +442,7 @@ end
 
 FFMenuDialog()
 
+-- Function to create the menu for buying a car at dealership 1
 function CD1Dialog()
 	createDialogList(15, "Auto Eroticar", 2, "Buy", "Cancel")
 	setDialogListHeaders(15, "Car~Price")
@@ -419,6 +453,7 @@ end
 
 CD1Dialog()
 
+-- Function to create the menu for buying a car at dealership 2
 function CD2Dialog()
 	createDialogList(25, "Grotti Automobile", 2, "Buy", "Cancel")
 	setDialogListHeaders(25, "Car~Price")
@@ -429,6 +464,7 @@ end
 
 CD2Dialog()
 
+-- Function to create the menu for buying the low end apartment 1
 function LEA1Dialog()
 	createDialogList(150, "Apartment", 1, "Yes", "No")
 	setDialogListHeaders(150, "Low End Apartment")
@@ -437,6 +473,7 @@ end
 
 LEA1Dialog()
 
+-- Function to create the menu for entering the low end apartment 1
 function LEA1EnterDialog()
 	createDialogList(155, "Apartment", 1, "Yes", "No")
 	setDialogListHeaders(155, "Low End Apartment")
@@ -445,6 +482,7 @@ end
 
 LEA1EnterDialog()
 
+-- Function to create the menu for exiting the low end apartment 1
 function LEA1ExitDialog()
 	createDialogList(151, "Apartment", 1, "Yes", "No")
 	setDialogListHeaders(151, "Low End Apartment")
@@ -453,6 +491,7 @@ end
 
 LEA1ExitDialog()
 
+-- same stuff just for High End apartments and so on now
 function HEA1Dialog()
 	createDialogList(110, "Apartment", 1, "Yes", "No")
 	setDialogListHeaders(110, "High End Apartment")
@@ -477,6 +516,7 @@ end
 
 HEA1ExitDialog()
 
+-- Function to create profile info menu
 function ProfileDialog(playerid)
 	createDialogList(1, "Profile", 2, "Ok", "Cancel")
 	setDialogListHeaders(1, "Name: " .. getPlayerName(playerid))
@@ -497,6 +537,7 @@ function ProfileDialog(playerid)
 	addDialogRow(1, "Location:~" .. x .. ", " .. y .. ", " .. z)
 end
 
+-- Function to create vehicle menu
 function VehicleDialog(playerid)
 	createDialogList(99, "Vehicle", 2, "Confirm", "Cancel")
 	setDialogListHeaders(99, "Vehicle")
@@ -504,11 +545,13 @@ function VehicleDialog(playerid)
 	addDialogRow(99, "Stop Engine")
 end
 
+-- Function to create "garage" menu, see what vehicles you own
 function OwnVehiclesDialog()
 	createDialogList(18, "Garage", 1, "Get", "Cancel")
 	setDialogListHeaders(18, "Vehicles")
 end
 
+-- Function to create menu when you drive into a gas station
 function GasStationDialog()
 	createDialogList(77, "Gas Station", 1, "Yes", "No")
 	setDialogListHeaders(77, "Fuel")
@@ -517,6 +560,7 @@ end
 
 GasStationDialog()
 
+-- Function to handle interaction with every dialog created (bus job, fast food job, apartment...)
 function busDialogResponse(playerid, dialogId, buttonId, rowId)
 	if(dialogId == 1337 and buttonId == 1 and rowId == 0 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now driving the Route \"Broker / Dukes\".", 0xFFFFFF00)
@@ -779,6 +823,7 @@ end
 
 registerEvent("busDialogResponse", "onPlayerDialogResponse")
 
+-- Function to create checkpoint for a route of the bus job
 function BR11(playerid)
 	CheckpointId = createCheckPoint(973.84851074219, -143.06121826172, 22.943145751953, 3.0, 0xFFFF00FF, 1, 0, 1)
 	BlipId = createBlip(974.22967529297, -142.29943847656, 23.49111366272, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
@@ -787,6 +832,7 @@ function BR11(playerid)
 	hideCheck(playerid, CheckpointId)
 end
 
+-- Same stuff, just different bus routes and more checkpoints
 function BR21(playerid)
 	CheckpointId = createCheckPoint(135.71165466309, -332.89593505859, 13.193890571594, 3.0, 0xFFFF00FF, 1, 0, 1)
 	BlipId = createBlip(135.71165466309, -332.89593505859, 14.193890571594, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
@@ -907,6 +953,7 @@ function BR24(playerid)
 	hideCheck(playerid, CheckpointId)
 end
 
+-- Function to end the bus job as soon as you passed the last checkpoint
 function BR1End(playerid)
 	deleteCheck()
 	deleteBlips()
@@ -923,6 +970,7 @@ function BR1End(playerid)
 	saveTable()
 end
 
+-- Same stuff
 function BR2End(playerid)
 	deleteCheck()
 	deleteBlips()
@@ -955,6 +1003,7 @@ function BR3End(playerid)
 	saveTable()
 end
 
+-- Function to handle what happens when you exit a vehicle (not used ig)
 function onExitVehicle(playerid, vehicleId, seatId)
 	if(PlayerTable[getPlayerName(playerid)].JobId == "BR11" or PlayerTable[getPlayerName(playerid)].JobId == "BR12"
 	or PlayerTable[getPlayerName(playerid)].JobId == "BR13" or PlayerTable[getPlayerName(playerid)].JobId == "BR14"
@@ -968,6 +1017,7 @@ end
 
 registerEvent("onExitVehicle", "onPlayerExitVehicle")
 
+-- Function to create fast food stores with their checkpoints and blips
 function FastFoodStores()
 	CB1 = createCheckPoint(-121.8881149292, 69.914100646973, 13.808049201965, 1.0, 0xFFFF00FF, 1, 0, 1)
 	createBlip(-121.8881149292, 69.914100646973, 13.808049201965, 22, 0xFFFFFFFF, 1, 0, true, "Cluckin' Bell")
@@ -977,6 +1027,7 @@ end
 
 FastFoodStores()
 
+-- Function to handle what happens when you do a fast food job
 function FF1(playerid)
 	setPlayerFrozen(playerid, true)
 	PlayerTable[getPlayerName(playerid)].hasJob = true
@@ -986,6 +1037,7 @@ function FF1(playerid)
 	showDialogList(playerid, 55)
 end
 
+-- Same stuff
 function FF2(playerid)
 	earnedCash = 25
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
@@ -1022,6 +1074,7 @@ function FF5(playerid)
 	showDialogList(playerid, 55)
 end
 
+-- Function to finish the fast food job
 function FFEnd(playerid)
 	earnedCash = 500
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
@@ -1034,6 +1087,7 @@ function FFEnd(playerid)
 	saveTable()
 end
 
+-- Function to create first car dealership with cars etc.
 function CarDealership1()
 	createBlip(-1488.5852050781, 1130.9370117188, 22.012754440308, 79, 0xFFFFFFFF, 1, 0, true, "Auto Eroticar")
 	car11 = createVehicle(1, -1496.0268554688, 1124.3966064453, 22.744379043579, 0.0, 0.0, -90.0, 1, 1, 1, 1, 1)
@@ -1049,6 +1103,7 @@ CarDealership1()
 
 registerEvent("RequestVehicleEntry", "onPlayerRequestVehicleEntry")
 
+-- Function to handle what happens when you try to enter a car (you wont be able to enter cars on showcase in the dealerships)
 function RequestVehicleEntry(playerid, vehicleId)
 	if (vehicleId == car11 or vehicleId == car21) then
 		removePlayerFromVehicle(playerid)
@@ -1059,10 +1114,12 @@ function RequestVehicleEntry(playerid, vehicleId)
 	end
 end
 
+-- Function to draw text when player walks near the cars on showcase in a dealership to get info about them
 function car11Info(playerid)
 	drawInfoText(playerid, "~y~Admiral", 2000)
 end
 
+-- Same stuff
 function car12Info(playerid)
 	drawInfoText(playerid, "~y~Intruder", 2000)
 end
@@ -1071,6 +1128,7 @@ function car13Info(playerid)
 	drawInfoText(playerid, "~y~Premier", 2000)
 end
 
+-- Function to create the second car dealership with cars etc.
 function CarDealership2()
 	createBlip(56.823192596436, 804.44287109375, 13.765069007874, 79, 0xFFFFFFFF, 1, 0, true, "Grotti Automobile")
 	car21 = createVehicle(4, 67.15404510498, 805.86199951172, 14.694367408752, 0.0, 0.0, 180.0, 1, 1, 1, 1, 1)
@@ -1084,6 +1142,7 @@ end
 
 CarDealership2()
 
+-- Same stuff like before but for second dealership
 function car21Info(playerid)
 	drawInfoText(playerid, "~y~Banshee", 2000)
 end
@@ -1096,6 +1155,7 @@ function car23Info(playerid)
 	drawInfoText(playerid, "~y~Infernus", 2000)
 end
 
+-- Function to create Low end apartment 1, its checkpoint etc.
 function LEA1()
 	LEA1CP = createCheckPoint(897.78088378906, -504.98333740234, 14.064782142639, 2.0, 0xFFFF00FF, 1, 0, 1)
 	createBlip(897.78088378906, -504.98333740234, 14.064782142639, 29, 0xFFFFFFFF, 1, 0, true, "Apartment")
@@ -1103,6 +1163,7 @@ end
 
 LEA1()
 
+-- Same stuff but high end apartment 1
 function HEA1()
 	HEA1CP = createCheckPoint(113.20606994629, 844.96362304688, 13.716341972351, 2.0, 0xFFFF00FF, 1, 0, 1)
 	createBlip(113.20606994629, 844.96362304688, 13.716341972351, 29, 0xFFFFFFFF, 1, 0, true, "Apartment")
@@ -1110,6 +1171,7 @@ end
 
 HEA1()
 
+-- Function to create the gas station with checkpoint etc.
 function Gas1()
 	createBlip(-479.74600219727, -209.23097229004, 6.7489099502563, 91, 0xFFFFFFFF, 1, 0, true, "Gas Station")
 	GasCP11 = createCheckPoint(-477.51477050781, -213.97120666504, 6.7486009597778, 3.0, 0xFFFF00FF, 1, 0, 1)
