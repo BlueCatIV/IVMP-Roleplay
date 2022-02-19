@@ -12,6 +12,7 @@ loadScript("TeamSpeak")
 loadScript("npc/npcRecorder")
 loadScript("npc/npcLoader")
 loadScript("entities")
+loadScript("watermark")
 
 setWorldMinuteDuration(1, 0)
 
