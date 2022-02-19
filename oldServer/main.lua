@@ -134,7 +134,7 @@ hunger = 100
 
 -- Function to start fuel system as soon as player enters vehicle
 function startFuel(playerid)
-	fuelTimer = setTimer("fuel", 1000, 0, playerid)
+	fuelTimer = setTimer("fuel", 20000, 0, playerid)
 end
 
 registerEvent("startFuel", "onPlayerEnteredVehicle")
@@ -150,6 +150,7 @@ registerEvent("endFuel", "onPlayerExitVehicle")
 function onPlayerJoin(playerid)
 	setPlayerKeyHook(playerid, 0x50, true)
 	setPlayerKeyHook(playerid, 0x51, true)
+	PlayerTable[getPlayerName(playerid)].hasJob = false
 end
 
 registerEvent("onPlayerJoin", "onPlayerCredential")
@@ -167,7 +168,6 @@ function onPlayerBindKey(playerid, Bind, IsBindUp)
 				Apartment = "None"
 			end
 			addDialogRow(1, "Money:~$" .. PlayerTable[getPlayerName(playerid)].Money)
-			-- cars
 			addDialogRow(1, "Apartment:~" .. Apartment)
 			x, y, z = getPlayerPos(playerid)
 			x = round(x, 3)
@@ -287,13 +287,13 @@ end
 
 registerEvent("Command", "onPlayerCommand")
 
--- Function to get the position of a player
+-- Function to get the position of a player (for debug purposes)
 function getPos()
 	local x, y, z = getPlayerPos(1)
 	print(x)
 	print(y)
 	print(z)
-	sendPlayerMsg(1, "Koordinaten werden angezeigt", 0xFFFF0000)
+	sendPlayerMsg(1, "Coordinates are shown.", 0xFFFF0000)
 end
 
 -- Wait/Sleep function for certain stuff
@@ -307,7 +307,7 @@ function hideCheck(playerid, CheckpointId)
 	players = getPlayers()
 	table.remove(players, playerid)
 	for i, id in ipairs(players) do
-		setCheckPointShowingForPlayer(CheckpointId, id, false) -- 1 is Checkpoint Id
+		setCheckPointShowingForPlayer(CheckpointId, id, false)
 	end
 end
 
@@ -318,7 +318,11 @@ function onPlayerEnterCheckPoint(playerid, checkpointId)
 	elseif(checkpointId == CB1 or checkpointId == CB2) then
 		showDialogList(playerid, 45)
 	elseif(checkpointId == GasCP11 or checkpointId == GasCP12) then
-		showDialogList(playerid, 77)
+		if(isPlayerInAnyVehicle(playerid) == 0) then
+			sendPlayerMsg(playerid, "You are currently not in a vehicle.", 0xFFFFFF00)
+		else
+			showDialogList(playerid, 77)
+		end
 	elseif(checkpointId == car11CP) then
 		car11Info(playerid)
 	elseif(checkpointId == car12CP) then
@@ -528,7 +532,6 @@ function ProfileDialog(playerid)
 		Apartment = "None"
 	end
 	addDialogRow(1, "Money:~$" .. PlayerTable[getPlayerName(playerid)].Money)
-	-- cars
 	addDialogRow(1, "Apartment:~" .. Apartment)
 	x, y, z = getPlayerPos(playerid)
 	x = round(x, 3)
@@ -568,19 +571,16 @@ function busDialogResponse(playerid, dialogId, buttonId, rowId)
 		PlayerTable[getPlayerName(playerid)].Job = "Bus"
 		BR11(playerid)
 		Bus = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
-		warpPlayerIntoVehicle(playerid, Bus, 0)
 	elseif(dialogId == 1337 and buttonId == 1 and rowId == 1 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now driving the Route \"Algonquin\".", 0xFFFFFF00)
 		PlayerTable[getPlayerName(playerid)].hasJob = true
 		BR21(playerid)
 		Bus = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
-		warpPlayerIntoVehicle(playerid, Bus, 0)
 	elseif(dialogId == 1337 and buttonId == 1 and rowId == 2 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now driving the Route \"Alderney\".", 0xFFFFFF00)
 		PlayerTable[getPlayerName(playerid)].hasJob = true
 		BR31(playerid)
 		Bus = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
-		warpPlayerIntoVehicle(playerid, Bus, 0)
 	elseif(dialogId == 45 and buttonId == 1 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now working at Cluckin' Bell.", 0xFFFFFF00)
 		FF1(playerid)
