@@ -30,7 +30,7 @@ function playerSpawnCredentials(playerid)
 	setPlayerCash(playerid, 0)
 	givePlayerWeapon(playerid, 15, 600)	
 	sendMsgToAll(getPlayerName(playerid) .. "(" .. playerid .. ") has joined the server", 0xFFFFFFFF)
-	sendPlayerMsg(playerid, "Welcome! Please use /login [Password] to access the server.", 0xFF009BFF)
+	sendPlayerMsg(playerid, "Welcome! Please use /login [Password] or /register [Password] to access the server.", 0xFF009BFF)
 end
 
 registerEvent("playerSpawnCredentials", "onPlayerCredential")
