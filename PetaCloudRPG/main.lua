@@ -88,9 +88,9 @@ end
 function loadTable()
 	PlayerTable, err = salt.load("tableSave.txt")
 	if err then
-		print("Noch nix da")
+		print("Error when loading PlayerTable")
 	elseif (PlayerTable ~= nil) then
-		print("Wurde geladen")
+		print("PlayerTable loaded")
 	end
 end
 
@@ -151,7 +151,9 @@ registerEvent("endFuel", "onPlayerExitVehicle")
 function onPlayerJoin(playerid)
 	setPlayerKeyHook(playerid, 0x50, true)
 	setPlayerKeyHook(playerid, 0x51, true)
-	PlayerTable[getPlayerName(playerid)].hasJob = false
+	if(containsTable(PlayerTable, getPlayerName(playerid)) == true) then
+		PlayerTable[getPlayerName(playerid)].hasJob = false
+	end
 end
 
 registerEvent("onPlayerJoin", "onPlayerCredential")
@@ -160,7 +162,8 @@ registerEvent("onPlayerJoin", "onPlayerCredential")
 function onPlayerBindKey(playerid, Bind, IsBindUp)
 	if(IsBindUp) then
 		if(Bind == 0x50) then -- P key
-			clearDialogRows(1)
+			createDialogList(1, "Profile", 2, "Ok", "Cancel")
+			setDialogListHeaders(1, "Name: " .. getPlayerName(playerid))
 			if(PlayerTable[getPlayerName(playerid)].ownHouse == "HEA1") then
 				Apartment = "High End Apartment"
 			elseif(PlayerTable[getPlayerName(playerid)].ownHouse == "LEA1") then
@@ -203,7 +206,7 @@ function login(text, playerid)
 		setPlayerWorld(playerid, 1)
 		setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money)
 		setPlayerFrozen(playerid, false)
-		ProfileDialog(playerid)
+		--ProfileDialog(playerid)
 		VehicleDialog(playerid)
 		OwnVehiclesDialog()
 	else
@@ -819,6 +822,8 @@ function busDialogResponse(playerid, dialogId, buttonId, rowId)
 	elseif(dialogId == 55 and buttonId == 0) then
 		sendPlayerMsg(playerid, "Leaveee", 0xFFFFFF00)
 		showDialogList(playerid, 55)
+	elseif(dialogId == 1) then
+		deleteDialogList(1)
 	end
 end
 
