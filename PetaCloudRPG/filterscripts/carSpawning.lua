@@ -19,7 +19,7 @@ function speedometer()
 			local velocityX, velocityY, velocityZ = getVehicleVelocity(vehicleId)
 			local speed = math.ceil(math.sqrt(velocityX^2 + velocityY^2 + velocityZ^2) * 3.7);
 			
-			drawInfoText(id, "~b~Speed:~w~ " .. speed .. " kmh", 600)
+			drawInfoText(id, "~R~Speed:~w~ " .. speed .. " KPH", 600)
 		end
 	end
 end
