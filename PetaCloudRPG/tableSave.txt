@@ -1,3 +1,54 @@
 return {
-
+    ["Po"] = {
+        ["Password"] = "abc",
+        ["Money"] = 0,
+        ["hasJob"] = false,
+        ["JobId"] = "0",
+        ["ownCar"] = -1,
+    },
+    ["Ben"] = {
+        ["Password"] = "lola",
+        ["Money"] = 0,
+        ["hasJob"] = false,
+        ["JobId"] = "0",
+        ["ownCar"] = -1,
+    },
+    ["TestPlayer"] = {
+        ["Password"] = "123",
+        ["Money"] = 25,
+        ["hasJob"] = false,
+        ["JobId"] = "0",
+        ["ownCar"] = -1,
+    },
+    ["Norbert"] = {
+        ["Job"] = "0",
+        ["Password"] = "LOL",
+        ["Garage"] = {
+            [4] = "Infernus",
+            [1] = "Cognoscenti",
+            [2] = "Admiral",
+            [3] = "Banshee",
+        },
+        ["ownHouse"] = "HEA1",
+        ["hasJob"] = false,
+        ["JobId"] = "0",
+        ["Money"] = 5260500,
+    },
+    ["PetaCloudEmployee"] = {
+        ["Job"] = "0",
+        ["Password"] = "abc",
+        ["Garage"] = {
+        },
+        ["ownHouse"] = "0",
+        ["hasJob"] = false,
+        ["JobId"] = "0",
+        ["Money"] = 670,
+    },
+    ["Bruce"] = {
+        ["Password"] = "admin",
+        ["Money"] = 25,
+        ["hasJob"] = false,
+        ["JobId"] = "0",
+        ["ownCar"] = -1,
+    },
 }

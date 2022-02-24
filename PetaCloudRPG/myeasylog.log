@@ -12259,3 +12259,88 @@
 21/02/2022 21:32:43.515 Lib: Client connected with id : 1, check id : 1 , ip: 192.168.178.27
 21/02/2022 21:32:43.531 Player PetaCloudEmployee(1) credentials arrived
 21/02/2022 21:34:49.781 Lib: Client disconnected with id: 1
+22/02/2022 20:20:44.671 Parsing config.cfg
+22/02/2022 20:20:44.671 Starting PetaCloud RPG on port 8888
+22/02/2022 20:20:44.031 Server thread is alive
+22/02/2022 20:20:44.031 Master list events count: 10
+22/02/2022 20:20:44.218 Utilis: script loaded: rcon
+22/02/2022 20:20:44.234 Utilis: script loaded: playerSpawn
+22/02/2022 20:20:44.234 Utilis: script loaded: carSpawning
+22/02/2022 20:20:44.250 Utilis: script loaded: weapons
+22/02/2022 20:20:44.250 Utilis: script loaded: skins
+22/02/2022 20:20:44.250 Utilis: script loaded: TeamSpeak
+22/02/2022 20:20:44.265 Utilis: script loaded: npc/npcRecorder
+22/02/2022 20:20:44.265 Utilis: script loaded: npc/npcLoader
+22/02/2022 20:20:44.281 Utilis: script loaded: entities
+22/02/2022 20:20:44.281 Utilis: script loaded: watermark
+22/02/2022 20:20:44.281 PlayerTable loaded
+22/02/2022 20:20:51.890 !Error: MasterList lost connection: Connection attempt failed
+22/02/2022 21:07:24.250 Parsing config.cfg
+22/02/2022 21:07:24.250 Starting PetaCloud RPG on port 1900
+22/02/2022 21:07:24.609 Server thread is alive
+22/02/2022 21:07:24.625 Master list events count: 10
+22/02/2022 21:07:25.765 Utilis: script loaded: rcon
+22/02/2022 21:07:25.765 Utilis: script loaded: playerSpawn
+22/02/2022 21:07:25.765 Utilis: script loaded: carSpawning
+22/02/2022 21:07:25.765 Utilis: script loaded: weapons
+22/02/2022 21:07:25.765 Utilis: script loaded: skins
+22/02/2022 21:07:25.765 Utilis: script loaded: TeamSpeak
+22/02/2022 21:07:25.765 Utilis: script loaded: npc/npcRecorder
+22/02/2022 21:07:25.765 Utilis: script loaded: npc/npcLoader
+22/02/2022 21:07:25.765 Utilis: script loaded: entities
+22/02/2022 21:07:25.765 Utilis: script loaded: watermark
+22/02/2022 21:07:25.765 PlayerTable loaded
+22/02/2022 21:07:31.406 !Error: MasterList lost connection: Connection attempt failed
+22/02/2022 21:09:33.015 Parsing config.cfg
+22/02/2022 21:09:33.015 Starting PetaCloud RPG on port 57020
+22/02/2022 21:09:33.375 Server thread is alive
+22/02/2022 21:09:33.375 Master list events count: 10
+22/02/2022 21:09:33.531 Utilis: script loaded: rcon
+22/02/2022 21:09:33.531 Utilis: script loaded: playerSpawn
+22/02/2022 21:09:33.531 Utilis: script loaded: carSpawning
+22/02/2022 21:09:33.531 Utilis: script loaded: weapons
+22/02/2022 21:09:33.531 Utilis: script loaded: skins
+22/02/2022 21:09:33.531 Utilis: script loaded: TeamSpeak
+22/02/2022 21:09:33.531 Utilis: script loaded: npc/npcRecorder
+22/02/2022 21:09:33.531 Utilis: script loaded: npc/npcLoader
+22/02/2022 21:09:33.531 Utilis: script loaded: entities
+22/02/2022 21:09:33.531 Utilis: script loaded: watermark
+22/02/2022 21:09:33.531 PlayerTable loaded
+22/02/2022 21:09:40.328 Parsing config.cfg
+22/02/2022 21:09:40.328 Starting PetaCloud RPG on port 57020
+22/02/2022 21:09:41.687 Server thread is alive
+22/02/2022 21:09:41.687 Master list events count: 10
+22/02/2022 21:09:41.828 Utilis: script loaded: rcon
+22/02/2022 21:09:41.828 Utilis: script loaded: playerSpawn
+22/02/2022 21:09:41.828 Utilis: script loaded: carSpawning
+22/02/2022 21:09:41.828 Utilis: script loaded: weapons
+22/02/2022 21:09:41.828 Utilis: script loaded: skins
+22/02/2022 21:09:41.828 Utilis: script loaded: TeamSpeak
+22/02/2022 21:09:41.828 Utilis: script loaded: npc/npcRecorder
+22/02/2022 21:09:41.828 Utilis: script loaded: npc/npcLoader
+22/02/2022 21:09:41.828 Utilis: script loaded: entities
+22/02/2022 21:09:41.828 Utilis: script loaded: watermark
+22/02/2022 21:09:41.843 PlayerTable loaded
+22/02/2022 21:09:47.453 !Error: MasterList lost connection: Connection attempt failed
+22/02/2022 21:10:31.218 Lib: Client connected with id : 1, check id : 1 , ip: 192.168.178.27
+22/02/2022 21:10:31.218 Player PetaCloudEmployee(1) credentials arrived
+22/02/2022 21:21:52.796 Lib: Client disconnected with id: 1
+24/02/2022 14:37:28.296 Parsing config.cfg
+24/02/2022 14:37:28.296 Starting PetaCloud RPG on port 8888
+24/02/2022 14:37:28.671 Server thread is alive
+24/02/2022 14:37:28.687 Master list events count: 10
+24/02/2022 14:37:28.859 Utilis: script loaded: rcon
+24/02/2022 14:37:28.859 Utilis: script loaded: playerSpawn
+24/02/2022 14:37:28.875 Utilis: script loaded: carSpawning
+24/02/2022 14:37:29.890 Utilis: script loaded: weapons
+24/02/2022 14:37:29.890 Utilis: script loaded: skins
+24/02/2022 14:37:29.890 Utilis: script loaded: TeamSpeak
+24/02/2022 14:37:29.890 Utilis: script loaded: npc/npcRecorder
+24/02/2022 14:37:29.890 Utilis: script loaded: npc/npcLoader
+24/02/2022 14:37:29.890 Utilis: script loaded: entities
+24/02/2022 14:37:29.890 Utilis: script loaded: watermark
+24/02/2022 14:37:29.921 PlayerTable loaded
+24/02/2022 14:37:35.453 !Error: MasterList lost connection: Connection attempt failed
+24/02/2022 14:38:30.562 Lib: Client connected with id : 1, check id : 1 , ip: 192.168.178.27
+24/02/2022 14:38:30.578 Player PetaCloudEmployee(1) credentials arrived
+24/02/2022 14:39:23.484 Lib: Client disconnected with id: 1

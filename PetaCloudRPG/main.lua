@@ -162,8 +162,8 @@ registerEvent("onPlayerJoin", "onPlayerCredential")
 function onPlayerBindKey(playerid, Bind, IsBindUp)
 	if(IsBindUp) then
 		if(Bind == 0x50) then -- P key
-			createDialogList(1, "Profile", 2, "Ok", "Cancel")
-			setDialogListHeaders(1, "Name: " .. getPlayerName(playerid))
+			createDialogList(playerid, "Profile", 2, "Ok", "Cancel")
+			setDialogListHeaders(playerid, "Name: " .. getPlayerName(playerid))
 			if(PlayerTable[getPlayerName(playerid)].ownHouse == "HEA1") then
 				Apartment = "High End Apartment"
 			elseif(PlayerTable[getPlayerName(playerid)].ownHouse == "LEA1") then
@@ -171,14 +171,14 @@ function onPlayerBindKey(playerid, Bind, IsBindUp)
 			else
 				Apartment = "None"
 			end
-			addDialogRow(1, "Money:~$" .. PlayerTable[getPlayerName(playerid)].Money)
-			addDialogRow(1, "Apartment:~" .. Apartment)
+			addDialogRow(playerid, "Money:~$" .. PlayerTable[getPlayerName(playerid)].Money)
+			addDialogRow(playerid, "Apartment:~" .. Apartment)
 			x, y, z = getPlayerPos(playerid)
 			x = round(x, 3)
 			y = round(y, 3)
 			z = round(z, 3)
-			addDialogRow(1, "Location:~" .. x .. ", " .. y .. ", " .. z)
-			showDialogList(playerid, 1)
+			addDialogRow(playerid, "Location:~" .. x .. ", " .. y .. ", " .. z)
+			showDialogList(playerid, playerid)
 		elseif(Bind == 0x51) then -- Q key
 			if(isPlayerInAnyVehicle(playerid) == 0) then
 				sendPlayerMsg(playerid, "You are currently not in a vehicle.", 0xFFFFFF00)
@@ -822,8 +822,8 @@ function busDialogResponse(playerid, dialogId, buttonId, rowId)
 	elseif(dialogId == 55 and buttonId == 0) then
 		sendPlayerMsg(playerid, "Leaveee", 0xFFFFFF00)
 		showDialogList(playerid, 55)
-	elseif(dialogId == 1) then
-		deleteDialogList(1)
+	elseif(dialogId == playerid) then
+		deleteDialogList(playerid)
 	end
 end
 
