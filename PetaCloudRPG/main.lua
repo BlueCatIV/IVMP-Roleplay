@@ -28,6 +28,9 @@ ownHouse = "0",
 JobId = "0",
 Job = "0",
 hasJob = false,
+jobCP = nil,
+jobBlip = nil,
+jobVeh = nil,
 Password = "admin",
 },
 ["TestPlayer"] = {
@@ -37,6 +40,9 @@ ownHouse = "0",
 JobId = "0",
 Job = "0",
 hasJob = false,
+jobCP = nil,
+jobBlip = nil,
+jobVeh = nil,
 Password = "123",
 },
 }
@@ -56,15 +62,19 @@ registerEvent("addToFuel", "onPlayerSpawnEntity")
 -- Fuel system, does stuff I dont remember
 function fuel(playerid)
 	if(isPlayerOnline(playerid) == true) then
-		if(AllVehicles[getPlayerDriving(playerid)] <= 0) then
-			setVehicleEngineFlags(getPlayerDriving(playerid), 0)
-			endFuel()
-		else
-			local vX, vY, vZ = getVehicleVelocity(getPlayerDriving(playerid))
-			local mph = math.ceil(math.sqrt(vX * vX + vY * vY + vY * vY) * 1.609)
-			if(mph > 0) then
-				AllVehicles[getPlayerDriving(playerid)] = AllVehicles[getPlayerDriving(playerid)] - 1
+		if(isPlayerInAnyVehicle(playerid) ~= 0) then
+			if(AllVehicles[getPlayerDriving(playerid)] <= 0) then
+				setVehicleEngineFlags(getPlayerDriving(playerid), 0)
+				endFuel()
+			else
+				local vX, vY, vZ = getVehicleVelocity(getPlayerDriving(playerid))
+				mph = math.ceil(math.sqrt(vX * vX + vY * vY + vY * vY) * 1.609)
+				if(mph > 0) then
+					AllVehicles[getPlayerDriving(playerid)] = AllVehicles[getPlayerDriving(playerid)] - 1
+				end
 			end
+		else
+			endFuel()
 		end
 	else
 		endFuel()
@@ -229,6 +239,9 @@ function createPlayerEntry(Name)
 	JobId = "0",
 	Job = "0",
 	hasJob = false,
+	jobCP = nil,
+	jobBlip = nil,
+	jobVeh = nil,
 	Password = "",
 	}
 	saveTable()
@@ -268,15 +281,18 @@ function Command(playerid, text)
 		end
 	elseif(text == "/quit") then
 		if(PlayerTable[getPlayerName(playerid)].Job == "Bus") then
-			deleteCheck()
-			deleteBlips()
+			deleteCheck(playerid)
+			deleteBlips(playerid)
 			sendPlayerMsg(playerid, "Job successfully cancelled.", 0xFFFFFF00)
+			removePlayerFromVehicle(playerid)
+			wait(5)
+			deleteVehicle(PlayerTable[getPlayerName(playerid)].jobVeh)
 			PlayerTable[getPlayerName(playerid)].JobId = "0"
 			PlayerTable[getPlayerName(playerid)].hasJob = false
 			PlayerTable[getPlayerName(playerid)].Job = "0"
-			removePlayerFromVehicle(playerid)
-			wait(5)
-			deleteVehicle(Bus)
+			PlayerTable[getPlayerName(playerid)].jobCP = nil
+			PlayerTable[getPlayerName(playerid)].jobVeh = nil
+			PlayerTable[getPlayerName(playerid)].jobBlip = nil
 			saveTable()
 		elseif(PlayerTable[getPlayerName(playerid)].Job == "FastFood") then
 			sendPlayerMsg(playerid, "Job successfully cancelled.", 0xFFFFFF00)
@@ -311,7 +327,15 @@ function hideCheck(playerid, CheckpointId)
 	players = getPlayers()
 	table.remove(players, playerid)
 	for i, id in ipairs(players) do
-		setCheckPointShowingForPlayer(CheckpointId, id, false)
+		setCheckPointShowingForPlayer(PlayerTable[getPlayerName(playerid)].jobCP, id, false)
+	end
+end
+
+function hideBlip(playerid)
+	players = getPlayers()
+	table.remove(players, playerid)
+	for i, id in ipairs(players) do
+		showBlipForPlayer(id, PlayerTable[getPlayerName(playerid)].jobBlip, false)
 	end
 end
 
@@ -359,27 +383,27 @@ function onPlayerEnterCheckPoint(playerid, checkpointId)
 		end
 	elseif(checkpointId == HEA1ExitCP) then
 		showDialogList(playerid, 112)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR11") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR11" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR12(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR12") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR12" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR13(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR13") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR13" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR14(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR14") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR14" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR1End(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR21") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR21" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR22(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR22") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR22" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR23(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR23") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR23" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR24(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR24") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR24" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR2End(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR31") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR31" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR32(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR32") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR32" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR33(playerid)
-	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR33") then
+	elseif(PlayerTable[getPlayerName(playerid)].JobId == "BR33" and checkpointId == PlayerTable[getPlayerName(playerid)].jobCP) then
 		BR3End(playerid)
 	end
 end
@@ -387,13 +411,13 @@ end
 registerEvent("onPlayerEnterCheckPoint", "onPlayerEnterCheckPoint")
 
 -- Function to delete a checkpoint
-function deleteCheck()
-	deleteCheckPoint(CheckpointId)
+function deleteCheck(playerid)
+	deleteCheckPoint(PlayerTable[getPlayerName(playerid)].jobCP)
 end
 
 -- Function to delete a blip
-function deleteBlips()
-	deleteBlip(BlipId)
+function deleteBlips(playerid)
+	deleteBlip(PlayerTable[getPlayerName(playerid)].jobBlip)
 end
 
 -- Function to generate a random number
@@ -574,17 +598,17 @@ function busDialogResponse(playerid, dialogId, buttonId, rowId)
 		PlayerTable[getPlayerName(playerid)].hasJob = true
 		PlayerTable[getPlayerName(playerid)].Job = "Bus"
 		BR11(playerid)
-		Bus = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
 	elseif(dialogId == 1337 and buttonId == 1 and rowId == 1 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now driving the Route \"Algonquin\".", 0xFFFFFF00)
 		PlayerTable[getPlayerName(playerid)].hasJob = true
 		BR21(playerid)
-		Bus = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
 	elseif(dialogId == 1337 and buttonId == 1 and rowId == 2 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now driving the Route \"Alderney\".", 0xFFFFFF00)
 		PlayerTable[getPlayerName(playerid)].hasJob = true
 		BR31(playerid)
-		Bus = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
 	elseif(dialogId == 45 and buttonId == 1 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now working at Cluckin' Bell.", 0xFFFFFF00)
 		FF1(playerid)
@@ -831,181 +855,187 @@ registerEvent("busDialogResponse", "onPlayerDialogResponse")
 
 -- Function to create checkpoint for a route of the bus job
 function BR11(playerid)
-	CheckpointId = createCheckPoint(973.84851074219, -143.06121826172, 22.943145751953, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(974.22967529297, -142.29943847656, 23.49111366272, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(973.84851074219, -143.06121826172, 22.943145751953, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(974.22967529297, -142.29943847656, 23.49111366272, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR11"
 	hideCheck(playerid, CheckpointId)
 end
 
 -- Same stuff, just different bus routes and more checkpoints
 function BR21(playerid)
-	CheckpointId = createCheckPoint(135.71165466309, -332.89593505859, 13.193890571594, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(135.71165466309, -332.89593505859, 14.193890571594, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(135.71165466309, -332.89593505859, 13.193890571594, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(135.71165466309, -332.89593505859, 14.193890571594, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR21"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR31(playerid)
-	CheckpointId = createCheckPoint(-1175.1861572266, 1331.6634521484, 21.343858718872, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(-1175.1861572266, 1331.6634521484, 22.343858718872, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(-1175.1861572266, 1331.6634521484, 21.343858718872, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(-1175.1861572266, 1331.6634521484, 22.343858718872, 85, 0xFFFFFFFF, 1, 0, false, "1. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR31"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR12(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(350, 500)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(1247.3278808594, -81.603172302246, 26.877897262573, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(1246.9666748047, -81.823600769043, 27.431922912598, 86, 0xFFFFFFFF, 1, 0, false, "2. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(1247.3278808594, -81.603172302246, 26.877897262573, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(1246.9666748047, -81.823600769043, 27.431922912598, 86, 0xFFFFFFFF, 1, 0, false, "2. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR12"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR22(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(500, 750)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(128.57147216797, 15.260237693787, 13.183264732361, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(128.57147216797, 15.260237693787, 14.183264732361, 86, 0xFFFFFFFF, 1, 0, false, "2. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(128.57147216797, 15.260237693787, 13.183264732361, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(128.57147216797, 15.260237693787, 14.183264732361, 86, 0xFFFFFFFF, 1, 0, false, "2. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR22"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR32(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(750, 1000)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(-1343.3532714844, 1098.6936035156, 18.015712738037, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(-1343.3532714844, 1098.6936035156, 19.015712738037, 86, 0xFFFFFFFF, 1, 0, false, "2. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(-1343.3532714844, 1098.6936035156, 18.015712738037, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(-1343.3532714844, 1098.6936035156, 19.015712738037, 86, 0xFFFFFFFF, 1, 0, false, "2. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR32"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR13(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(350, 500)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(1814.1390380859, 638.45764160156, 27.187509536743, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(1814.1390380859, 638.45764160156, 28.187509536743, 87, 0xFFFFFFFF, 1, 0, false, "3. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(1814.1390380859, 638.45764160156, 27.187509536743, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(1814.1390380859, 638.45764160156, 28.187509536743, 87, 0xFFFFFFFF, 1, 0, false, "3. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR13"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR23(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(500, 750)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(127.57033538818, 163.38909912109, 13.282990455627, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(127.57033538818, 163.38909912109, 14.282990455627, 87, 0xFFFFFFFF, 1, 0, false, "3. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(127.57033538818, 163.38909912109, 13.282990455627, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(127.57033538818, 163.38909912109, 14.282990455627, 87, 0xFFFFFFFF, 1, 0, false, "3. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR23"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR33(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(500, 1000)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(-1742.6109619141, 418.69320678711, 23.868848800659, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(-1742.6109619141, 418.69320678711, 24.868848800659, 87, 0xFFFFFFFF, 1, 0, false, "3. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(-1742.6109619141, 418.69320678711, 23.868848800659, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(-1742.6109619141, 418.69320678711, 24.868848800659, 87, 0xFFFFFFFF, 1, 0, false, "3. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR33"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR14(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(350, 500)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(2335.8232421875, 368.96716308594, 4.4409923553467, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(2335.8232421875, 368.96716308594, 5.4409923553467, 88, 0xFFFFFFFF, 1, 0, false, "4. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(2335.8232421875, 368.96716308594, 4.4409923553467, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(2335.8232421875, 368.96716308594, 5.4409923553467, 88, 0xFFFFFFFF, 1, 0, false, "4. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR14"
 	hideCheck(playerid, CheckpointId)
 end
 
 function BR24(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(500, 750)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
-	CheckpointId = createCheckPoint(-374.38119506836, 1113.1014404297, 13.180121421814, 3.0, 0xFFFF00FF, 1, 0, 1)
-	BlipId = createBlip(-374.38119506836, 1113.1014404297, 14.180121421814, 87, 0xFFFFFFFF, 1, 0, false, "4. Stop")
-	showBlipForPlayer(playerid, BlipId, true)
+	PlayerTable[getPlayerName(playerid)].jobCP = createCheckPoint(-374.38119506836, 1113.1014404297, 13.180121421814, 3.0, 0xFFFF00FF, 1, 0, 1)
+	PlayerTable[getPlayerName(playerid)].jobBlip = createBlip(-374.38119506836, 1113.1014404297, 14.180121421814, 87, 0xFFFFFFFF, 1, 0, false, "4. Stop")
+	showBlipForPlayer(playerid, PlayerTable[getPlayerName(playerid)].jobBlip, true)
 	PlayerTable[getPlayerName(playerid)].JobId = "BR24"
 	hideCheck(playerid, CheckpointId)
 end
 
 -- Function to end the bus job as soon as you passed the last checkpoint
 function BR1End(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(350, 500)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
 	sendPlayerMsg(playerid, "You successfully completed the Route \"Broker / Dukes\".", 0xFFFFFF00)
+	removePlayerFromVehicle(playerid)
+	wait(5)
+	deleteVehicle(PlayerTable[getPlayerName(playerid)].jobVeh)
 	PlayerTable[getPlayerName(playerid)].JobId = "0"
 	PlayerTable[getPlayerName(playerid)].hasJob = false
 	PlayerTable[getPlayerName(playerid)].Job = "0"
-	removePlayerFromVehicle(playerid)
-	wait(5)
-	deleteVehicle(Bus)
+	PlayerTable[getPlayerName(playerid)].jobCP = nil
+	PlayerTable[getPlayerName(playerid)].jobVeh = nil
 	saveTable()
 end
 
 -- Same stuff
 function BR2End(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(500, 750)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
 	sendPlayerMsg(playerid, "You successfully completed the Route \"Algonquin\".", 0xFFFFFF00)
+	removePlayerFromVehicle(playerid)
+	wait(5)
+	deleteVehicle(PlayerTable[getPlayerName(playerid)].jobVeh)
 	PlayerTable[getPlayerName(playerid)].JobId = "0"
 	PlayerTable[getPlayerName(playerid)].hasJob = false
 	PlayerTable[getPlayerName(playerid)].Job = "0"
-	removePlayerFromVehicle(playerid)
-	wait(5)
-	deleteVehicle(Bus)
+	PlayerTable[getPlayerName(playerid)].jobCP = nil
+	PlayerTable[getPlayerName(playerid)].jobVeh = nil
 	saveTable()
 end
 
 function BR3End(playerid)
-	deleteCheck()
-	deleteBlips()
+	deleteCheck(playerid)
+	deleteBlips(playerid)
 	earnedCash = mathRand(750, 1000)
 	setPlayerCash(playerid, PlayerTable[getPlayerName(playerid)].Money + earnedCash)
 	PlayerTable[getPlayerName(playerid)].Money = PlayerTable[getPlayerName(playerid)].Money + earnedCash
 	sendPlayerMsg(playerid, "You successfully completed the Route \"Alderney\".", 0xFFFFFF00)
+	removePlayerFromVehicle(playerid)
+	wait(5)
+	deleteVehicle(PlayerTable[getPlayerName(playerid)].jobVeh)
 	PlayerTable[getPlayerName(playerid)].JobId = "0"
 	PlayerTable[getPlayerName(playerid)].hasJob = false
 	PlayerTable[getPlayerName(playerid)].Job = "0"
-	removePlayerFromVehicle(playerid)
-	wait(5)
-	deleteVehicle(Bus)
+	PlayerTable[getPlayerName(playerid)].jobCP = nil
+	PlayerTable[getPlayerName(playerid)].jobVeh = nil
 	saveTable()
 end
 
@@ -1016,7 +1046,7 @@ function onExitVehicle(playerid, vehicleId, seatId)
 	or PlayerTable[getPlayerName(playerid)].JobId == "BR21" or PlayerTable[getPlayerName(playerid)].JobId == "BR22"
 	or PlayerTable[getPlayerName(playerid)].JobId == "BR23" or PlayerTable[getPlayerName(playerid)].JobId == "BR24"
 	or PlayerTable[getPlayerName(playerid)].JobId == "BR31" or PlayerTable[getPlayerName(playerid)].JobId == "BR32"
-	or PlayerTable[getPlayerName(playerid)].JobId == "BR33" and vehicleId == Bus) then
+	or PlayerTable[getPlayerName(playerid)].JobId == "BR33" and vehicleId == PlayerTable[getPlayerName(playerid)].jobVeh) then
 		sendPlayerMsg(1, "Don't leave!", 0xFFFFFF00) -- when bus left then end job
 	end
 end
