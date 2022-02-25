@@ -1,33 +1,33 @@
 return {
-    ["Mike"] = {
-        ["Garage"] = {
-        },
-        ["Money"] = 0,
-        ["ownHouse"] = "0",
-        ["Password"] = "ac",
-        ["hasJob"] = false,
-        ["Job"] = "0",
-        ["JobId"] = "0",
-    },
     ["PetaCloud"] = {
-        ["Garage"] = {
-        },
         ["Money"] = 0,
-        ["ownHouse"] = "0",
         ["Password"] = "abc",
         ["hasJob"] = false,
-        ["Job"] = "0",
         ["JobId"] = "0",
+        ["Job"] = "0",
+        ["Garage"] = {
+        },
+        ["ownHouse"] = "0",
     },
     ["MikeVeryLong"] = {
+        ["Money"] = 0,
+        ["chosenSkin"] = 11,
+        ["hasJob"] = false,
+        ["Password"] = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        ["JobId"] = "0",
+        ["ownHouse"] = "0",
         ["Garage"] = {
         },
         ["Job"] = "0",
+    },
+    ["Mike"] = {
         ["Money"] = 0,
-        ["ownHouse"] = "0",
-        ["Password"] = "abc",
-        ["chosenSkin"] = 8,
+        ["Password"] = "ac",
         ["hasJob"] = false,
         ["JobId"] = "0",
+        ["Job"] = "0",
+        ["Garage"] = {
+        },
+        ["ownHouse"] = "0",
     },
 }

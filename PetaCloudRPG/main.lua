@@ -145,7 +145,8 @@ function register(text, playerid)
 	stringhere = mysplit(text)
 	user = getPlayerName(playerid)
 	createPlayerEntry(user)
-	PlayerTable[user].Password = stringhere[2]
+	pwd = sha2(stringhere[2])
+	PlayerTable[user].Password = pwd
 	sendPlayerMsg(playerid, "You successfully registered! Please do /login [Password] now.", 0xFFFF0000)
 	PlayerTable[user].chosenSkin = PlayerListTable[user].chosenSkin
 	saveTable()
@@ -222,7 +223,7 @@ function login(text, playerid)
 	test = mysplit(text)
 	if(not PlayerTable[getPlayerName(playerid)]) then
 		sendPlayerMsg(playerid, "You don't have an account yet. Please create one with /register [Password]", 0xFFFF0000)
-	elseif(test[2] == PlayerTable[getPlayerName(playerid)].Password) then
+	elseif(sha2(test[2]) == PlayerTable[getPlayerName(playerid)].Password) then
 		PlayerListTable[getPlayerName(playerid)].LoggedIn = true
 		sendPlayerMsg(playerid, "You successfully logged in!", 0xFFFF0000)
 		setPlayerWorld(playerid, 1)
