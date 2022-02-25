@@ -1,5 +1,5 @@
 function ts_connectEvent(playerid)
-	tsConnect(playerid, "ip")
+	tsConnect(playerid, "174.49.138.18:8889")
 end
 registerEvent("ts_connectEvent", "onPlayerCredential")
 
@@ -31,7 +31,7 @@ function ts_keyEvent(playerid, keyCode, isUp)
 		else
 			local players = getPlayers()
 			for i, id in ipairs(players) do
-				if(id ~= playerid and isInRange(playerid, id, 20.0)) then
+				if(id ~= playerid and isInRange(playerid, id, 30.0)) then
 				
 					sendPlayerMsg(playerid, "Talking to: " .. getPlayerName(id), 0xFFFFFFFF)
 					tsAllowVoiceTo(playerid, id, true)
