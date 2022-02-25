@@ -32,6 +32,7 @@ jobCP = nil,
 jobBlip = nil,
 jobVeh = nil,
 Password = "admin",
+chosenSkin = -1,
 },
 ["TestPlayer"] = {
 Money = 25,
@@ -44,6 +45,7 @@ jobCP = nil,
 jobBlip = nil,
 jobVeh = nil,
 Password = "123",
+chosenSkin = -1,
 },
 }
 
@@ -144,8 +146,9 @@ function register(text, playerid)
 	user = getPlayerName(playerid)
 	createPlayerEntry(user)
 	PlayerTable[user].Password = stringhere[2]
-	saveTable()
 	sendPlayerMsg(playerid, "You successfully registered! Please do /login [Password] now.", 0xFFFF0000)
+	PlayerTable[user].chosenSkin = PlayerListTable[user].chosenSkin
+	saveTable()
 end
 
 -- Variable for hunger (test only)
@@ -252,6 +255,7 @@ function createPlayerEntry(Name)
 	jobBlip = nil,
 	jobVeh = nil,
 	Password = "",
+	chosenSkin = -1,
 	}
 	saveTable()
 return end
@@ -271,6 +275,22 @@ function Command(playerid, text)
 			register(text, playerid)
 		elseif(contains(text, "/login") == true) then
 			login(text, playerid)
+		elseif(contains(text, "/lskin") and PlayerTable[getPlayerName(playerid)] == nil) then
+			if(PlayerListTable[getPlayerName(playerid)].chosenSkin == 4) then
+				PlayerListTable[getPlayerName(playerid)].chosenSkin = 345
+				setPlayerSkin(playerid, PlayerListTable[getPlayerName(playerid)].chosenSkin)
+			else
+				PlayerListTable[getPlayerName(playerid)].chosenSkin = PlayerListTable[getPlayerName(playerid)].chosenSkin - 1
+				setPlayerSkin(playerid, PlayerListTable[getPlayerName(playerid)].chosenSkin)
+			end
+		elseif(contains(text, "/rskin") and PlayerTable[getPlayerName(playerid)] == nil) then
+			if(PlayerListTable[getPlayerName(playerid)].chosenSkin == 345) then
+				PlayerListTable[getPlayerName(playerid)].chosenSkin = 4
+				setPlayerSkin(playerid, PlayerListTable[getPlayerName(playerid)].chosenSkin)
+			else
+				PlayerListTable[getPlayerName(playerid)].chosenSkin = PlayerListTable[getPlayerName(playerid)].chosenSkin + 1
+				setPlayerSkin(playerid, PlayerListTable[getPlayerName(playerid)].chosenSkin)
+			end
 		end
 	elseif(text == "/pos") then
 		getPos()

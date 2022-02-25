@@ -1,3 +1,33 @@
 return {
-
+    ["Mike"] = {
+        ["Garage"] = {
+        },
+        ["Money"] = 0,
+        ["ownHouse"] = "0",
+        ["Password"] = "ac",
+        ["hasJob"] = false,
+        ["Job"] = "0",
+        ["JobId"] = "0",
+    },
+    ["PetaCloud"] = {
+        ["Garage"] = {
+        },
+        ["Money"] = 0,
+        ["ownHouse"] = "0",
+        ["Password"] = "abc",
+        ["hasJob"] = false,
+        ["Job"] = "0",
+        ["JobId"] = "0",
+    },
+    ["MikeVeryLong"] = {
+        ["Garage"] = {
+        },
+        ["Job"] = "0",
+        ["Money"] = 0,
+        ["ownHouse"] = "0",
+        ["Password"] = "abc",
+        ["chosenSkin"] = 8,
+        ["hasJob"] = false,
+        ["JobId"] = "0",
+    },
 }

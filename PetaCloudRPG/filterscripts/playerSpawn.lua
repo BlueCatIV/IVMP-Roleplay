@@ -5,6 +5,7 @@ local spawnInfo = {
 PlayerListTable = {
 ["Bruce"] = {
 LoggedIn = false,
+chosenSkin = 10,
 },
 }
 
@@ -13,6 +14,7 @@ function addPlayerListTable(Name)
 		return end
 	PlayerListTable[Name] = {
 	LoggedIn = false,
+	chosenSkin = 10,
 	}
 return end
 
@@ -24,13 +26,22 @@ function playerSpawnCredentials(playerid)
 	setPlayerFrozen(playerid, true)
 	print("Player " .. getPlayerName(playerid) .. "(" .. playerid .. ") credentials arrived")
 	local sId = math.random(1, #spawnInfo)
-	setPlayerSkin(playerid, spawnInfo[sId][4])
+	if(PlayerTable[getPlayerName(playerid)] == nil) then
+		setPlayerSkin(playerid, 10)
+	else
+		setPlayerSkin(playerid, PlayerTable[getPlayerName(playerid)].chosenSkin)
+	end
 	spawnPlayer(playerid, spawnInfo[sId][1], spawnInfo[sId][2], spawnInfo[sId][3])
 	setPlayerColor(playerid, spawnInfo[sId][5])
 	setPlayerCash(playerid, 0)
-	givePlayerWeapon(playerid, 15, 600)	
+	givePlayerWeapon(playerid, 15, 600)
 	sendMsgToAll(getPlayerName(playerid) .. "(" .. playerid .. ") has joined the server", 0xFFFFFFFF)
-	sendPlayerMsg(playerid, "Welcome! Please use /login [Password] or /register [Password] to access the server.", 0xFF009BFF)
+	if(PlayerTable[getPlayerName(playerid)] == nil) then
+		sendPlayerMsg(playerid, "Welcome! Please use /register [Password] to create a new account on the server.", 0xFF009BFF)
+		sendPlayerMsg(playerid, "To change your skin, type /lskin or /rskin into the chat. You can only do this now, before you are registered.", 0xFF009BFF)
+	else
+		sendPlayerMsg(playerid, "Welcome! Please use /login [Password] to log into your existing account.", 0xFF009BFF)
+	end
 end
 
 registerEvent("playerSpawnCredentials", "onPlayerCredential")
