@@ -54,10 +54,18 @@ AllVehicles = {}
 function addToFuel(playerid, spawned, entityType, entityId)
 	if(spawned == true and entityType == 1) then
 		AllVehicles[entityId] = 100
+		for key,value in next,AllVehicles,nil do 
+			print(key, " -- ", value) 
+		end
+	elseif(spawned == false and entityType == 1) then
+		table.remove(AllVehicles, entityId)
+		for key,value in next,AllVehicles,nil do 
+			print(key, " -- ", value) 
+		end
 	end
 end
 
-registerEvent("addToFuel", "onPlayerSpawnEntity")
+-- registerEvent("addToFuel", "onPlayerSpawnEntity")
 
 -- Fuel system, does stuff I dont remember
 function fuel(playerid)
@@ -148,14 +156,14 @@ function startFuel(playerid)
 	fuelTimer = setTimer("fuel", 20000, 0, playerid)
 end
 
-registerEvent("startFuel", "onPlayerEnteredVehicle")
+-- registerEvent("startFuel", "onPlayerEnteredVehicle")
 
 -- Function to end fuel system / stop using fuel
 function endFuel()
 	deleteTimer(fuelTimer)
 end
 
-registerEvent("endFuel", "onPlayerExitVehicle")
+-- registerEvent("endFuel", "onPlayerExitVehicle")
 
 -- Function to set keybinds when player joins
 function onPlayerJoin(playerid)
@@ -172,6 +180,7 @@ registerEvent("onPlayerJoin", "onPlayerCredential")
 function onPlayerBindKey(playerid, Bind, IsBindUp)
 	if(IsBindUp) then
 		if(Bind == 0x50) then -- P key
+			deleteDialogList(playerid)
 			createDialogList(playerid, "Profile", 2, "Ok", "Cancel")
 			setDialogListHeaders(playerid, "Name: " .. getPlayerName(playerid))
 			if(PlayerTable[getPlayerName(playerid)].ownHouse == "HEA1") then
@@ -196,7 +205,7 @@ function onPlayerBindKey(playerid, Bind, IsBindUp)
 				clearDialogRows(99)
 				addDialogRow(99, "Start Engine")
 				addDialogRow(99, "Stop Engine")
-				addDialogRow(99, "Fuel:~" .. AllVehicles[getPlayerDriving(playerid)])
+				-- addDialogRow(99, "Fuel:~" .. AllVehicles[getPlayerDriving(playerid)])
 				showDialogList(playerid, 99)
 			end
 		end
@@ -347,9 +356,9 @@ function onPlayerEnterCheckPoint(playerid, checkpointId)
 		showDialogList(playerid, 45)
 	elseif(checkpointId == GasCP11 or checkpointId == GasCP12) then
 		if(isPlayerInAnyVehicle(playerid) == 0) then
-			sendPlayerMsg(playerid, "You are currently not in a vehicle.", 0xFFFFFF00)
+			-- sendPlayerMsg(playerid, "You are currently not in a vehicle.", 0xFFFFFF00)
 		else
-			showDialogList(playerid, 77)
+			-- showDialogList(playerid, 77)
 		end
 	elseif(checkpointId == car11CP) then
 		car11Info(playerid)
@@ -591,24 +600,50 @@ end
 
 GasStationDialog()
 
+function hasThatRoute()
+	for key, value in pairs(PlayerTable) do
+		if(PlayerTable[key].JobId == "BR11" or PlayerTable[key].JobId == "BR12" or PlayerTable[key].JobId == "BR13" or PlayerTable[key].JobId == "BR14") then
+			return "hasR1"
+		elseif(PlayerTable[key].JobId == "BR21" or PlayerTable[key].JobId == "BR22" or PlayerTable[key].JobId == "BR23" or PlayerTable[key].JobId == "BR24") then
+			return "hasR2"
+		elseif(PlayerTable[key].JobId == "BR31" or PlayerTable[key].JobId == "BR32" or PlayerTable[key].JobId == "BR33") then
+			return "hasR3"
+		else
+			return "Nothing"
+		end 
+	end
+end
+
 -- Function to handle interaction with every dialog created (bus job, fast food job, apartment...)
 function busDialogResponse(playerid, dialogId, buttonId, rowId)
 	if(dialogId == 1337 and buttonId == 1 and rowId == 0 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
-		sendPlayerMsg(playerid, "You are now driving the Route \"Broker / Dukes\".", 0xFFFFFF00)
-		PlayerTable[getPlayerName(playerid)].hasJob = true
-		PlayerTable[getPlayerName(playerid)].Job = "Bus"
-		BR11(playerid)
-		PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		if(hasThatRoute() ~= "hasR1") then
+			sendPlayerMsg(playerid, "You are now driving the Route \"Broker / Dukes\".", 0xFFFFFF00)
+			PlayerTable[getPlayerName(playerid)].hasJob = true
+			PlayerTable[getPlayerName(playerid)].Job = "Bus"
+			BR11(playerid)
+			PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		else
+			sendPlayerMsg(playerid, "Someone is already driving this route.", 0xFFFFFF00)
+		end
 	elseif(dialogId == 1337 and buttonId == 1 and rowId == 1 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
-		sendPlayerMsg(playerid, "You are now driving the Route \"Algonquin\".", 0xFFFFFF00)
-		PlayerTable[getPlayerName(playerid)].hasJob = true
-		BR21(playerid)
-		PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		if(hasThatRoute() ~= "hasR2") then
+			sendPlayerMsg(playerid, "You are now driving the Route \"Algonquin\".", 0xFFFFFF00)
+			[getPlayerName(playerid)].hasJob = true
+			BR21(playerid)
+			PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		else
+			sendPlayerMsg(playerid, "Someone is already driving this route.", 0xFFFFFF00)
+		end
 	elseif(dialogId == 1337 and buttonId == 1 and rowId == 2 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
-		sendPlayerMsg(playerid, "You are now driving the Route \"Alderney\".", 0xFFFFFF00)
-		PlayerTable[getPlayerName(playerid)].hasJob = true
-		BR31(playerid)
-		PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		if(hasThatRoute() ~= "hasR3") then
+			sendPlayerMsg(playerid, "You are now driving the Route \"Alderney\".", 0xFFFFFF00)
+			PlayerTable[getPlayerName(playerid)].hasJob = true
+			BR31(playerid)
+			PlayerTable[getPlayerName(playerid)].jobVeh = createVehicle(13, 1031.873046875, 264.12274169922, 30.961814880371, 0.0, 0.0, 0.0, 1, 1, 1, 1, 1)
+		else
+			sendPlayerMsg(playerid, "Someone is already driving this route.", 0xFFFFFF00)
+		end
 	elseif(dialogId == 45 and buttonId == 1 and PlayerTable[getPlayerName(playerid)].hasJob == false) then
 		sendPlayerMsg(playerid, "You are now working at Cluckin' Bell.", 0xFFFFFF00)
 		FF1(playerid)
