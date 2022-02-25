@@ -1,5 +1,5 @@
 function ts_connectEvent(playerid)
-	tsConnect(playerid, "174.49.138.18:8889")
+	tsConnect(playerid, "174.49.138.18:9987")
 end
 registerEvent("ts_connectEvent", "onPlayerCredential")
 
