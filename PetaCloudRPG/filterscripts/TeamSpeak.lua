@@ -27,11 +27,11 @@ function ts_keyEvent(playerid, keyCode, isUp)
 		if(isUp) then
 			tsToggleVoice(playerid, false)
 			tsAllowVoiceTo(playerid, -1, false) --Clears all
-			sendPlayerMsg(playerid, "No longer talking", 0xFFFFFFFF)
+			sendPlayerMsg(playerid, "No Longer Talking!", 0xFFFFFFFF)
 		else
 			local players = getPlayers()
 			for i, id in ipairs(players) do
-				if(id ~= playerid and isInRange(playerid, id, 30.0)) then
+				if(id ~= playerid and isInRange(playerid, id, 50.0)) then
 				
 					sendPlayerMsg(playerid, "Talking to: " .. getPlayerName(id), 0xFFFFFFFF)
 					tsAllowVoiceTo(playerid, id, true)
