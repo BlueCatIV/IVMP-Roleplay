@@ -8,11 +8,11 @@ loadScript("playerSpawn")
 loadScript("carSpawning")
 loadScript("weapons")
 loadScript("skins")
-loadScript("TeamSpeak")
 loadScript("npc/npcRecorder")
 loadScript("npc/npcLoader")
 loadScript("entities")
-loadScript("watermark")
+loadScript("chatSystem")
+loadScript("vehrent")
 
 setWorldMinuteDuration(1, 0)
 
